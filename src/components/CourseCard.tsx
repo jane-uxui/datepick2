@@ -20,7 +20,7 @@ export function CourseCard({ typeLabel, place }: CourseCardProps) {
     : place.description;
 
   return (
-    <article className="space-y-2">
+    <article className="font-gaegu space-y-2">
       <div className="text-xl leading-none" aria-hidden="true">
         {typeIcon[typeLabel]}
       </div>

@@ -1,12 +1,13 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { BottomActions } from "@/components/BottomActions";
-import { CourseCard } from "@/components/CourseCard";
+import { CourseRoute } from "@/components/CourseRoute";
 import { OptionChip } from "@/components/OptionChip";
 import { StepLayout } from "@/components/StepLayout";
 import {
-  ACTIVITY_OPTIONS,
+  ACTIVITY_CATEGORIES,
+  ANY_ACTIVITY,
   ANY_FOOD,
   ANY_REGION,
   FOOD_OPTIONS,
@@ -19,11 +20,14 @@ import type { RecommendedCourse } from "@/types/place";
 
 type Screen = "home" | "region" | "food" | "activity" | "result";
 
-const primaryButton =
-  "min-h-12 flex-1 rounded-xl bg-white/90 px-5 py-3 text-base font-black text-[#282424] shadow-[0_12px_22px_rgba(94,62,62,0.10)] transition hover:bg-white disabled:cursor-not-allowed disabled:text-stone-300 disabled:shadow-none";
+const pageBackground =
+  "bg-[radial-gradient(circle_at_20%_0%,rgba(255,196,208,0.36),transparent_28rem),linear-gradient(180deg,#fff7f2_0%,#fff1f5_52%,#fff8ed_100%)]";
 
-const secondaryButton =
-  "min-h-12 flex-1 rounded-xl bg-white/70 px-5 py-3 text-base font-black text-[#5a5050] shadow-[0_10px_18px_rgba(94,62,62,0.08)] transition hover:bg-white";
+const primaryButton =
+  "min-h-12 flex-1 rounded-xl bg-transparent px-5 py-3 text-base font-black text-[#282424] shadow-[-6px_-6px_12px_#fff,6px_6px_12px_#E6DADA] transition hover:text-[#f58ca4] disabled:cursor-not-allowed disabled:text-stone-300 disabled:shadow-none";
+
+const previousButton =
+  "grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-transparent text-xl font-black text-[#5a5050] shadow-[-6px_-6px_12px_#fff,6px_6px_12px_#E6DADA] transition hover:text-[#f58ca4]";
 
 function toggleExclusiveOption(current: string[], option: string, exclusiveOption: string): string[] {
   if (option === exclusiveOption) {
@@ -36,9 +40,53 @@ function toggleExclusiveOption(current: string[], option: string, exclusiveOptio
     : [...withoutExclusive, option];
 }
 
-function toggleMultiOption(current: string[], option: string): string[] {
-  return current.includes(option) ? current.filter((item) => item !== option) : [...current, option];
+function toggleRegionGroup(current: string[], groupOptions: string[]): string[] {
+  const withoutAny = current.filter((item) => item !== ANY_REGION);
+  const groupSelected = groupOptions.every((option) => withoutAny.includes(option));
+
+  if (groupSelected) {
+    return withoutAny.filter((option) => !groupOptions.includes(option));
+  }
+
+  return Array.from(new Set([...withoutAny, ...groupOptions]));
 }
+
+const foodStepOptions = [...FOOD_OPTIONS.filter((option) => option !== ANY_FOOD), ANY_FOOD];
+const activityStepOptions = [...ACTIVITY_CATEGORIES, ANY_ACTIVITY];
+
+const heroIcons = [
+  "/icons/food1.png",
+  "/icons/food2.png",
+  "/icons/food3.png",
+  "/icons/food4.png",
+  "/icons/food5.png",
+  "/icons/food6.png",
+  "/icons/food7.png",
+  "/icons/food8.png",
+  "/icons/act1.png",
+  "/icons/act2.png",
+  "/icons/act3.png",
+  "/icons/act4.png",
+  "/icons/act5.png",
+  "/icons/act6.png",
+  "/icons/act7.png",
+  "/icons/act8.png",
+  "/icons/coffee.png",
+  "/icons/jajang.png",
+];
+
+const activityIconByOption: Partial<Record<string, string>> = {
+  산책: "/icons/act1.png",
+  "전시/문화": "/icons/act2.png",
+  "체험/공방": "/icons/act3.png",
+  액티비티: "/icons/act4.png",
+  쇼핑: "/icons/act5.png",
+  감성카페: "/icons/cafe.png",
+  야경: "/icons/act6.png",
+  드라이브: "/icons/act7.png",
+  사진: "/icons/act8.png",
+};
+
 
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("home");
@@ -47,14 +95,16 @@ export default function Home() {
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [course, setCourse] = useState<RecommendedCourse | null>(null);
   const [toast, setToast] = useState("");
+  const [heroIconIndex, setHeroIconIndex] = useState(0);
 
-  const resultDescription = useMemo(() => {
-    if (!course) {
-      return "";
-    }
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setHeroIconIndex((current) => (current + 1) % heroIcons.length);
+    }, 1000);
 
-    return `오늘은 그럼 🍝 {${course.foodPlace.name}} 에서 배부터 든든히 채워주고, {${course.activityPlace.name}}에서 기분 좋게 힐링🌳한 다음, 마지막은 {${course.cafePlace.name}}에서 달달하게 마무리하면 완벽한 코스예요.`;
-  }, [course]);
+    return () => window.clearInterval(timer);
+  }, []);
+
 
   const showToast = (message: string) => {
     setToast(message);
@@ -90,30 +140,35 @@ export default function Home() {
 
   if (screen === "home") {
     return (
-      <main className="flex min-h-dvh items-center px-5 py-8">
-        <section className="mx-auto w-full max-w-xl">
-          <div className="mb-5 flex justify-end">
-            <span className="rounded-full bg-white/80 px-4 py-2 text-sm font-black text-rose-500 shadow-sm">
-              데이트픽
-            </span>
+      <main className={`min-h-dvh ${pageBackground} text-[#1f1f1f]`}>
+        <section className="mx-auto flex h-dvh w-full max-w-[390px] flex-col px-[35px] pb-8 pt-[40px] sm:shadow-2xl sm:shadow-rose-100/70">
+          <div className="flex justify-end">
+            <span className="text-[12px] font-black text-[#ff6f9c]">데이트픽</span>
           </div>
-          <div className="rounded-[2rem] bg-white/75 p-6 shadow-xl shadow-rose-100/90 ring-1 ring-white sm:p-8">
-            <div className="mb-8 grid h-44 place-items-center rounded-[1.5rem] bg-gradient-to-br from-rose-100 via-white to-amber-100">
-              <div className="text-center">
-                <p className="text-sm font-black text-rose-400">DATE COURSE PICKER</p>
-                <div className="mt-4 text-6xl" aria-hidden="true">
-                  ♡
-                </div>
-              </div>
-            </div>
-            <h1 className="text-3xl font-black leading-tight text-stone-900 sm:text-4xl">오늘 데이트, 어디 갈까요?</h1>
-            <p className="mt-4 text-base leading-7 text-stone-500">
-              지역과 취향만 고르면 데이트 코스를 추천해드려요.
+
+          <div className="mt-[40px]">
+            <h1 className="text-[42px] font-black leading-[1.15] tracking-[-0.04em]">
+              우리 데이트,
+              <br />
+              어디 갈까요?
+            </h1>
+            <p className="mt-6 text-[14px] font-medium leading-6 text-[#2d2929]">
+              지역과 취향만 골라봐요 데이트 코스를 추천해드릴게요.
             </p>
-            <button type="button" onClick={() => setScreen("region")} className={`${primaryButton} mt-9 w-full`}>
-              데이트 코스 만들기
-            </button>
           </div>
+
+                    <div className="mt-10 grid h-[210px] place-items-center">
+            <img
+              key={heroIcons[heroIconIndex]}
+              src={heroIcons[heroIconIndex]}
+              alt=""
+              className="h-16 w-16 object-contain opacity-0 animate-[hero-icon-pop_0.45s_ease-out_forwards]"
+            />
+          </div>
+
+          <button type="button" onClick={() => setScreen("region")} className={`${primaryButton} mt-10 w-full flex-none`}>
+            데이트 코스 만들기
+          </button>
         </section>
       </main>
     );
@@ -138,26 +193,32 @@ export default function Home() {
           </BottomActions>
         }
       >
-        <div className="space-y-8">
-          <div className="flex flex-wrap gap-2">
-            <OptionChip
-              label={ANY_REGION}
-              selected={selectedRegions.includes(ANY_REGION)}
-              onClick={() => setSelectedRegions([ANY_REGION])}
-            />
-          </div>
+        <div className="space-y-7">
           <OptionGroup
             title="서울"
             options={[...SEOUL_REGIONS]}
             selected={selectedRegions}
+            allSelected={SEOUL_REGIONS.every((option) => selectedRegions.includes(option))}
+            onSelectAll={() => setSelectedRegions((current) => toggleRegionGroup(current, [...SEOUL_REGIONS]))}
             onSelect={(option) => setSelectedRegions((current) => toggleExclusiveOption(current, option, ANY_REGION))}
           />
           <OptionGroup
             title="인천"
             options={[...INCHEON_REGIONS]}
             selected={selectedRegions}
+            allSelected={INCHEON_REGIONS.every((option) => selectedRegions.includes(option))}
+            onSelectAll={() => setSelectedRegions((current) => toggleRegionGroup(current, [...INCHEON_REGIONS]))}
             onSelect={(option) => setSelectedRegions((current) => toggleExclusiveOption(current, option, ANY_REGION))}
           />
+          <div className="pt-1">
+            <OptionChip
+              label="장소 정하지 않고 랜덤으로 데이트 가기"
+              iconSrc="/icons/location.png"
+              selected={selectedRegions.includes(ANY_REGION)}
+              onClick={() => setSelectedRegions([ANY_REGION])}
+              fullWidth
+            />
+          </div>
         </div>
       </StepLayout>
     );
@@ -167,12 +228,12 @@ export default function Home() {
     return (
       <StepLayout
         step={2}
-        title="오늘은 뭐 먹고 싶어요?"
+        title="같이 뭐 먹고싶어요?"
         description={"먹고 싶은 종류를 골라주세요.\n여러 개 선택할 수 있어요."}
         actions={
           <BottomActions>
-            <button type="button" className={secondaryButton} onClick={() => setScreen("region")}>
-              이전
+            <button type="button" className={previousButton} onClick={() => setScreen("region")} aria-label="이전 단계로 이동">
+              ←
             </button>
             <button
               type="button"
@@ -185,11 +246,12 @@ export default function Home() {
           </BottomActions>
         }
       >
-        <div className="flex flex-wrap gap-x-4 gap-y-5">
-          {FOOD_OPTIONS.map((option) => (
+        <div className="grid grid-cols-3 gap-x-5 gap-y-6">
+          {foodStepOptions.map((option, index) => (
             <OptionChip
               key={option}
               label={option}
+              iconSrc={option === ANY_FOOD ? "/icons/question.png" : `/icons/food${index + 1}.png`}
               selected={selectedFoods.includes(option)}
               onClick={() => setSelectedFoods((current) => toggleExclusiveOption(current, option, ANY_FOOD))}
             />
@@ -203,12 +265,12 @@ export default function Home() {
     return (
       <StepLayout
         step={3}
-        title="어떤 데이트를 하고 싶어요?"
-        description={"오늘 하고 싶은 데이트 유형을 골라주세요.\n여러 개 선택할 수 있어요."}
+        title="어떤 데이트 하고 싶어요?"
+        description={"하고 싶은 데이트 유형을 골라주세요.\n여러 개 선택할 수 있어요."}
         actions={
           <BottomActions>
-            <button type="button" className={secondaryButton} onClick={() => setScreen("food")}>
-              이전
+            <button type="button" className={previousButton} onClick={() => setScreen("food")} aria-label="이전 단계로 이동">
+              ←
             </button>
             <button
               type="button"
@@ -221,13 +283,14 @@ export default function Home() {
           </BottomActions>
         }
       >
-        <div className="flex flex-wrap gap-x-4 gap-y-5">
-          {ACTIVITY_OPTIONS.map((option) => (
+        <div className="grid grid-cols-3 gap-x-5 gap-y-6">
+          {activityStepOptions.map((option) => (
             <OptionChip
               key={option}
               label={option}
+              iconSrc={activityIconByOption[option] ?? "/icons/question.png"}
               selected={selectedActivities.includes(option)}
-              onClick={() => setSelectedActivities((current) => toggleMultiOption(current, option))}
+              onClick={() => setSelectedActivities((current) => toggleExclusiveOption(current, option, ANY_ACTIVITY))}
             />
           ))}
         </div>
@@ -236,42 +299,19 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-dvh bg-[#faeeee] text-[#1f1f1f]">
-      <section className="mx-auto flex min-h-dvh w-full max-w-[390px] flex-col px-9 pb-7 pt-28 sm:shadow-2xl sm:shadow-rose-100/70">
-        <p className="text-[13px] font-medium leading-5">오늘의 데이트 코스</p>
-        <h1 className="mt-3 text-[25px] font-medium leading-[1.45] tracking-[-0.02em]">{resultDescription}</h1>
+    <main className={`min-h-dvh ${pageBackground} text-[#1f1f1f]`}>
+      <section className="mx-auto flex min-h-dvh w-full max-w-[390px] flex-col px-9 pb-7 pt-[40px] sm:shadow-2xl sm:shadow-rose-100/70">
+        <div>
+          <h1 className="gaegu-text text-[23px] font-bold leading-tight tracking-normal">오늘의 데이트 코스</h1>
+          <p className="gaegu-text mt-2 text-[12px] font-normal leading-1 text-[#ff7b9c]">가게 누르면 네이버 지도로 이동해요!</p>
+        </div>
 
-        {course ? (
-          <div className="mt-12 space-y-7">
-            <CourseCard
-              order={1}
-              typeLabel="식당"
-              helperText="데이트 시작은 맛있는 한 끼부터"
-              place={course.foodPlace}
-            />
-            <CourseCard
-              order={2}
-              typeLabel="할 것"
-              helperText="밥 먹고 가볍게 즐기기 좋아요"
-              place={course.activityPlace}
-            />
-            <CourseCard
-              order={3}
-              typeLabel="카페"
-              helperText="마지막은 달달하게 쉬어가는 코스"
-              place={course.cafePlace}
-            />
-          </div>
-        ) : (
-          <p className="mt-12 text-sm font-medium">추천 결과를 다시 만들어 주세요.</p>
-        )}
+        <div className="mt-5 flex-1">
+          {course ? <CourseRoute items={course.items} /> : <p className="text-sm font-medium">추천 결과를 다시 만들어 주세요.</p>}
+        </div>
 
-        <div className="mt-12 space-y-8">
-          <button
-            type="button"
-            className="min-h-12 w-full rounded-xl bg-white/80 px-5 py-3 text-base font-black text-[#282424] shadow-[0_12px_22px_rgba(94,62,62,0.10)] transition hover:bg-white"
-            onClick={handleShare}
-          >
+        <div className="mt-5 space-y-8">
+          <button type="button" className={`${primaryButton} w-full`} onClick={handleShare}>
             공유하기
           </button>
           <div className="grid grid-cols-2 gap-6 px-3">
@@ -297,19 +337,22 @@ function OptionGroup({
   title,
   options,
   selected,
+  allSelected,
+  onSelectAll,
   onSelect,
 }: {
   title: string;
   options: string[];
   selected: string[];
+  allSelected: boolean;
+  onSelectAll: () => void;
   onSelect: (option: string) => void;
 }) {
   return (
-    <div className="space-y-4">
-      <span className="inline-flex min-h-9 items-center rounded-xl bg-white/80 px-5 py-2 text-[12px] font-semibold text-[#2d2929] shadow-[0_10px_18px_rgba(94,62,62,0.10)] ring-1 ring-white/60">
-        {title}
-      </span>
+    <div className="space-y-3">
+      <h2 className="!text-[12px] font-medium leading-5 text-[#2d2929]">{title}</h2>
       <div className="flex flex-wrap gap-x-4 gap-y-4">
+        <OptionChip label="전체" selected={allSelected} onClick={onSelectAll} />
         {options.map((option) => (
           <OptionChip key={option} label={option} selected={selected.includes(option)} onClick={() => onSelect(option)} />
         ))}
@@ -317,3 +360,15 @@ function OptionGroup({
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,11 +4,7 @@ export function formatCourseText(course: RecommendedCourse): string {
   return [
     "데이트픽 추천 코스",
     `지역: ${course.region}`,
-    `1. 식당 - ${course.foodPlace.name}`,
-    `2. 할 것 - ${course.activityPlace.name}`,
-    `3. 카페 - ${course.cafePlace.name}`,
-    "",
-    `오늘은 ${course.foodPlace.name}에서 맛있게 시작해볼까요? 배도 든든히 채웠다면 ${course.activityPlace.name}에서 기분 좋게 힐링하고, 마지막은 빠질 수 없는 ${course.cafePlace.name}에서 예쁨까지 가득 채우면 데이트 성공!`,
+    ...course.items.map((item, index) => `${index + 1}. ${item.label} - ${item.place.name}`),
   ].join("\n");
 }
 

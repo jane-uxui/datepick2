@@ -1,5 +1,6 @@
 ﻿export const ANY_REGION = "아무데나";
 export const ANY_FOOD = "아무거나";
+export const ANY_ACTIVITY = "아무거나";
 
 export const SEOUL_REGIONS = [
   "홍대/연남",
@@ -20,22 +21,22 @@ export const FOOD_CATEGORIES = [
   "일식",
   "중식",
   "분식",
-  "술집",
   "고기",
-  "분위기 좋은곳",
+  "술집",
+  "샐러드",
 ] as const;
 
 export const FOOD_OPTIONS = [ANY_FOOD, ...FOOD_CATEGORIES] as const;
 
-export const ACTIVITY_OPTIONS = [
+export const ACTIVITY_CATEGORIES = [
   "산책",
   "전시/문화",
   "체험/공방",
   "액티비티",
   "쇼핑",
-  "감성카페",
   "야경",
   "드라이브",
   "사진",
-  "조용한데이트",
 ] as const;
+
+export const ACTIVITY_OPTIONS = [ANY_ACTIVITY, ...ACTIVITY_CATEGORIES] as const;

@@ -6,15 +6,21 @@ export type Place = {
   region: string;
   type: PlaceType;
   foodCategory?: string;
+  activityCategory?: string;
+  customTag?: string;
   tags: string[];
-  description: string;
+  description?: string;
   address?: string;
   mapUrl?: string;
 };
 
+export type CourseItem = {
+  stepType: PlaceType;
+  label: "식당" | "액티비티" | "카페";
+  place: Place;
+};
+
 export type RecommendedCourse = {
   region: string;
-  foodPlace: Place;
-  activityPlace: Place;
-  cafePlace: Place;
+  items: CourseItem[];
 };
