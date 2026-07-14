@@ -16,11 +16,11 @@ export function OptionChip({ label, selected, onClick, iconSrc, iconText, fullWi
       onClick={onClick}
       aria-pressed={selected}
       className={[
-        "rounded-xl bg-transparent !text-[12px] font-semibold transition active:scale-95",
+        "rounded-xl bg-transparent !text-[12px] font-semibold transition active:scale-90",
         selected
-          ? "text-[#f58ca4] shadow-[inset_-6px_-6px_12px_#fff,inset_6px_6px_12px_#E6DADA]"
-          : "text-[#2d2929] shadow-[-6px_-6px_12px_#fff,6px_6px_12px_#E6DADA] hover:text-[#f58ca4]",
-        hasIcon ? "flex h-[92px] w-[92px] flex-col items-center justify-center gap-3 px-3 py-3" : "min-h-9 px-5 py-2",
+          ? "text-[#f58ca4] shadow-[inset_-3px_-3px_6px_#ffffffb3,inset_3px_3px_6px_#E6DADA]"
+          : "text-[#2d2929] shadow-[-3px_-3px_6px_#ffffffb3,3px_3px_6px_#E6DADA] hover:text-[#f58ca4]",
+        hasIcon ? "flex h-[92px] w-[92px] flex-col items-center justify-center gap-3 px-3 py-3" : "min-h-0 px-4 py-1.5",
         fullWidth ? "w-full" : "",
       ].join(" ")}
     >
@@ -30,3 +30,4 @@ export function OptionChip({ label, selected, onClick, iconSrc, iconText, fullWi
     </button>
   );
 }
+

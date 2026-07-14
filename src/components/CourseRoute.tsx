@@ -21,8 +21,8 @@ const activityIconByCategory: Record<string, string> = {
 const nodePositions = {
   3: [
     "left-[4px] top-[0px]",
-    "left-[98px] top-[138px]",
-    "left-[42px] top-[280px]",
+    "left-[118px] top-[138px]",
+    "left-[46px] top-[280px]",
   ],
   4: [
     "left-[4px] top-[0px]",
@@ -38,10 +38,10 @@ function getIcon(item: CourseItem): { src?: string; fallback: string } {
   }
 
   if (item.stepType === "activity") {
-    return { src: activityIconByCategory[item.place.activityCategory ?? ""], fallback: "🎁" };
+    return { src: activityIconByCategory[item.place.category], fallback: "🎁" };
   }
 
-  if (item.place.foodCategory === "술집") {
+  if (item.place.category === "술집") {
     return { src: "/icons/food7.png", fallback: "🍾" };
   }
 
@@ -50,7 +50,7 @@ function getIcon(item: CourseItem): { src?: string; fallback: string } {
 
 function getTagParts(place: Place): string[] {
   const category =
-    place.type === "food" ? place.foodCategory : place.type === "activity" ? place.activityCategory ?? place.tags[0] : "카페";
+    place.type === "cafe" ? "카페" : place.category;
   const custom = place.customTag ?? place.tags.find((tag) => tag !== category);
 
   return [place.region, category, custom].filter(Boolean).map((tag) => `#${tag}`);
@@ -137,7 +137,7 @@ export function CourseRoute({ items }: CourseRouteProps) {
   return (
     <div className="relative" style={{ height }}>
       <svg
-        className="pointer-events-none absolute inset-x-[-35px] top-0 h-full w-[calc(100%+70px)]"
+        className="pointer-events-none absolute inset-x-[-32px] top-0 h-full w-[calc(100%+64px)]"
         viewBox={`-110 0 615 ${height}`}
         fill="none"
         preserveAspectRatio="none"
@@ -150,6 +150,7 @@ export function CourseRoute({ items }: CourseRouteProps) {
     </div>
   );
 }
+
 
 
 

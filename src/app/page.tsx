@@ -24,10 +24,10 @@ const pageBackground =
   "bg-[radial-gradient(circle_at_20%_0%,rgba(255,196,208,0.36),transparent_28rem),linear-gradient(180deg,#fff7f2_0%,#fff1f5_52%,#fff8ed_100%)]";
 
 const primaryButton =
-  "min-h-12 flex-1 rounded-xl bg-transparent px-5 py-3 text-base font-black text-[#282424] shadow-[-6px_-6px_12px_#fff,6px_6px_12px_#E6DADA] transition hover:text-[#f58ca4] disabled:cursor-not-allowed disabled:text-stone-300 disabled:shadow-none";
+  "min-h-12 flex-1 rounded-xl bg-transparent px-5 py-3 text-base font-black text-[#282424] shadow-[-6px_-6px_12px_rgba(255,255,255,0.7),6px_6px_12px_#E6DADA] transition hover:text-[#f58ca4] disabled:cursor-not-allowed disabled:text-stone-300 disabled:shadow-none";
 
 const previousButton =
-  "grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-transparent text-xl font-black text-[#5a5050] shadow-[-6px_-6px_12px_#fff,6px_6px_12px_#E6DADA] transition hover:text-[#f58ca4]";
+  "grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-transparent text-xl font-black text-[#5a5050] shadow-[-6px_-6px_12px_rgba(255,255,255,0.7),6px_6px_12px_#E6DADA] transition hover:text-[#f58ca4]";
 
 function toggleExclusiveOption(current: string[], option: string, exclusiveOption: string): string[] {
   if (option === exclusiveOption) {
@@ -141,7 +141,7 @@ export default function Home() {
   if (screen === "home") {
     return (
       <main className={`min-h-dvh ${pageBackground} text-[#1f1f1f]`}>
-        <section className="mx-auto flex h-dvh w-full max-w-[390px] flex-col px-[35px] pb-8 pt-[40px] sm:shadow-2xl sm:shadow-rose-100/70">
+        <section className="mx-auto flex h-dvh w-full max-w-[390px] flex-col px-8 pb-8 pt-[40px] sm:shadow-2xl sm:shadow-rose-100/70">
           <div className="flex justify-end">
             <span className="text-[12px] font-black text-[#ff6f9c]">데이트픽</span>
           </div>
@@ -193,7 +193,7 @@ export default function Home() {
           </BottomActions>
         }
       >
-        <div className="space-y-7">
+        <div className="space-y-5">
           <OptionGroup
             title="서울"
             options={[...SEOUL_REGIONS]}
@@ -210,7 +210,7 @@ export default function Home() {
             onSelectAll={() => setSelectedRegions((current) => toggleRegionGroup(current, [...INCHEON_REGIONS]))}
             onSelect={(option) => setSelectedRegions((current) => toggleExclusiveOption(current, option, ANY_REGION))}
           />
-          <div className="pt-1">
+          <div className="pt-0">
             <OptionChip
               label="장소 정하지 않고 랜덤으로 데이트 가기"
               iconSrc="/icons/location.png"
@@ -300,7 +300,7 @@ export default function Home() {
 
   return (
     <main className={`min-h-dvh ${pageBackground} text-[#1f1f1f]`}>
-      <section className="mx-auto flex min-h-dvh w-full max-w-[390px] flex-col px-9 pb-7 pt-[40px] sm:shadow-2xl sm:shadow-rose-100/70">
+      <section className="mx-auto flex min-h-dvh w-full max-w-[390px] flex-col px-8 pb-7 pt-[40px] sm:shadow-2xl sm:shadow-rose-100/70">
         <div>
           <h1 className="gaegu-text text-[23px] font-bold leading-tight tracking-normal">오늘의 데이트 코스</h1>
           <p className="gaegu-text mt-2 text-[12px] font-normal leading-1 text-[#ff7b9c]">가게 누르면 네이버 지도로 이동해요!</p>
@@ -315,10 +315,10 @@ export default function Home() {
             공유하기
           </button>
           <div className="grid grid-cols-2 gap-6 px-3">
-            <button type="button" className="min-h-10 text-base font-black text-[#282424]" onClick={createRecommendation}>
+            <button type="button" className="min-h-10 !text-sm text-[#282424]" onClick={createRecommendation}>
               다시 추천받기
             </button>
-            <button type="button" className="min-h-10 text-base font-black text-[#282424]" onClick={resetAll}>
+            <button type="button" className="min-h-10 !text-sm text-[#282424]" onClick={resetAll}>
               처음으로
             </button>
           </div>
@@ -351,7 +351,7 @@ function OptionGroup({
   return (
     <div className="space-y-3">
       <h2 className="!text-[12px] font-medium leading-5 text-[#2d2929]">{title}</h2>
-      <div className="flex flex-wrap gap-x-4 gap-y-4">
+      <div className="flex flex-wrap gap-x-3 gap-y-3">
         <OptionChip label="전체" selected={allSelected} onClick={onSelectAll} />
         {options.map((option) => (
           <OptionChip key={option} label={option} selected={selected.includes(option)} onClick={() => onSelect(option)} />
@@ -360,6 +360,7 @@ function OptionGroup({
     </div>
   );
 }
+
 
 
 
