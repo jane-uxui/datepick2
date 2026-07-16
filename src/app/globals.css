@@ -12,20 +12,39 @@
 
 html {
   min-height: 100%;
+  min-height: 100dvh;
+  background-color: #fff7f2;
   background:
     radial-gradient(circle at top left, rgba(255, 196, 208, 0.35), transparent 34rem),
     linear-gradient(180deg, #fff7f2 0%, #fff1f5 52%, #fff8ed 100%);
+  background-attachment: fixed;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
+  padding-top: env(safe-area-inset-top);
+  background-color: #fff7f2;
   background:
     radial-gradient(circle at top left, rgba(255, 196, 208, 0.35), transparent 34rem),
     linear-gradient(180deg, #fff7f2 0%, #fff1f5 52%, #fff8ed 100%);
+  background-attachment: fixed;
   font-family: Arial, Helvetica, sans-serif;
+  isolation: isolate;
 }
 
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at top left, rgba(255, 196, 208, 0.35), transparent 34rem),
+    linear-gradient(180deg, #fff7f2 0%, #fff1f5 52%, #fff8ed 100%);
+}
 button {
   font: inherit;
 }
