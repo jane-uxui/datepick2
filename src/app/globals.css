@@ -12,6 +12,9 @@
 
 html {
   min-height: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(255, 196, 208, 0.35), transparent 34rem),
+    linear-gradient(180deg, #fff7f2 0%, #fff1f5 52%, #fff8ed 100%);
 }
 
 body {
