@@ -15,6 +15,7 @@ import {
   SEOUL_REGIONS,
 } from "@/data/options";
 import { recommendCourse } from "@/lib/recommendCourse";
+import { buildCoursePath, courseFromItemIds, getMissingCourseItemIds } from "@/lib/courseUrl";
 import { shareCourse } from "@/lib/shareCourse";
 import type { RecommendedCourse } from "@/types/place";
 
@@ -95,6 +96,7 @@ export default function Home() {
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [course, setCourse] = useState<RecommendedCourse | null>(null);
   const [toast, setToast] = useState("");
+  const [missingSharedIds, setMissingSharedIds] = useState<string[]>([]);
   const [heroIconIndex, setHeroIconIndex] = useState(0);
 
   useEffect(() => {
@@ -105,6 +107,18 @@ export default function Home() {
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const sharedItems = new URLSearchParams(window.location.search).get("items");
+
+    if (!sharedItems) {
+      return;
+    }
+
+    setMissingSharedIds(getMissingCourseItemIds(sharedItems));
+    setCourse(courseFromItemIds(sharedItems));
+    setScreen("result");
+  }, []);
+
 
   const showToast = (message: string) => {
     setToast(message);
@@ -112,8 +126,11 @@ export default function Home() {
   };
 
   const createRecommendation = () => {
-    setCourse(recommendCourse(selectedRegions, selectedFoods, selectedActivities));
+    const nextCourse = recommendCourse(selectedRegions, selectedFoods, selectedActivities);
+    setCourse(nextCourse);
+    setMissingSharedIds([]);
     setScreen("result");
+    window.history.pushState(null, "", buildCoursePath(nextCourse));
   };
 
   const resetAll = () => {
@@ -121,8 +138,10 @@ export default function Home() {
     setSelectedFoods([]);
     setSelectedActivities([]);
     setCourse(null);
+    setMissingSharedIds([]);
     setToast("");
     setScreen("home");
+    window.history.pushState(null, "", "/");
   };
 
   const handleShare = async () => {
@@ -132,7 +151,7 @@ export default function Home() {
 
     try {
       const result = await shareCourse(course);
-      showToast(result === "shared" ? "공유 창을 열었어요." : "추천 코스를 복사했어요.");
+      showToast(result === "shared" ? "공유 창을 열었어요." : "공유 링크를 복사했어요.");
     } catch {
       alert("공유와 복사에 실패했어요. 잠시 후 다시 시도해 주세요.");
     }
@@ -307,7 +326,14 @@ export default function Home() {
         </div>
 
         <div className="mt-5 flex-1">
-          {course ? <CourseRoute items={course.items} /> : <p className="text-sm font-medium">추천 결과를 다시 만들어 주세요.</p>}
+          {missingSharedIds.length > 0 ? (
+            <p className="mb-3 text-[12px] font-semibold text-[#ff7b9c]">일부 장소 정보를 찾을 수 없어요.</p>
+          ) : null}
+          {course && course.items.length > 0 ? (
+            <CourseRoute items={course.items} />
+          ) : (
+            <p className="text-sm font-medium">장소 정보를 찾을 수 없어요.</p>
+          )}
         </div>
 
         <div className="mt-5 space-y-8">
